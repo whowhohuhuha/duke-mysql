@@ -1,0 +1,105 @@
+SELECT COUNT(DISTINCT skuinfo.sku) 
+FROM (skuinfo LEFT JOIN skstinfo ON skuinfo.sku = skstinfo.sku) LEFT JOIN trnsact
+ON skuinfo.sku=trnsact.sku
+WHERE skstinfo.sku IS NOT NULL AND trnsact.sku IS NOT NULL;
+
+
+SELECT COUNT(DISTINCT skuinfo.sku) 
+FROM (skuinfo LEFT JOIN skstinfo ON skuinfo.sku = skstinfo.sku) LEFT JOIN trnsact
+ON skuinfo.sku=trnsact.sku
+WHERE skstinfo.sku IS NULL OR trnsact.sku IS NULL;
+
+
+SELECT COUNT(*) 
+FROM trnsact t LEFT JOIN skstinfo s
+ON s.sku = t.sku AND s.store = t.store
+WHERE s.sku IS NOT NULL AND s.store IS NOT NULL;
+
+SELECT COUNT(DISTINCT store)
+FROM strinfo;
+
+SELECT COUNT(DISTINCT store)
+FROM skstinfo;
+
+SELECT COUNT(DISTINCT store)
+FROM store_msa;
+
+SELECT COUNT(DISTINCT store)
+FROM trnsact;
+
+SELECT *
+FROM tRnsact t LEFT JOIN skstinfo s ON t.sku = s.sku
+WHERE s.sku IS NULL;
+
+SELECT saledate, SUM(amt)
+FROM trnsact
+WHERE stype='P'
+GROUP BY saledate
+ORDER BY SUM(amt) DESC;
+
+SELECT TOP 3 COUNT(s.sku), d.deptdesc
+FROM skuinfo s LEFT JOIN deptinfo d
+ON d.dept=s.dept
+GROUP BY d.deptdesc
+ORDER BY COUNT(s.sku) DESC;
+
+SELECT COUNT(k.sku)
+FROM skstinfo k LEFT JOIN skuinfo s
+ON k.sku = s.sku
+WHERE s.sku IS NULL;
+
+SELECT SUM(t.amt-s.cost)/COUNT(DISTINCT t.saledate) AS AvgProfit
+FROM trnsact t LEFT JOIN skstinfo s
+ON t.sku = s.sku AND t.store = s.store
+WHERE t.stype = 'P'
+ORDER BY AvgProfit DESC;
+
+SELECT state, COUNT(msa), MIN(msa_pop), MAX(msa_income)
+FROM store_msa
+GROUP BY state
+HAVING state='NC';
+
+
+SELECT d.dept,d.deptdesc, s.brand, s.style, s.color, SUM(t.amt)
+FROM deptinfo d LEFT JOIN skuinfo s ON d.dept = s.dept LEFT JOIN trnsact t
+ON t.sku = s.sku
+WHERE d.deptdesc IS NOT NULL AND t.stype = 'P'
+GROUP BY d.dept, d.deptdesc,s.brand,s.style,s.color
+ORDER BY SUM(t.amt) DESC;
+
+SELECT COUNT(DISTINCT sku), store
+FROM skstinfo
+GROUP BY store
+HAVING COUNT(DISTINCT sku) > 180000;
+
+SELECT s.sku,s.style, s.size, s.packsize, s.vendor
+FROM skuinfo s LEFT JOIN deptinfo d
+ON d.dept = s.dept
+WHERE d.deptdesc = 'cop' AND s.brand = 'federal' AND s.color = 'rinse wash'
+GROUP BY s.sku, s.style, s.size, s.packsize, s.vendor;
+
+SELECT COUNT(s.sku)
+FROM skuinfo s LEFT JOIN skstinfo k
+ON s.sku = k.sku
+WHERE k.sku IS NULL;
+
+SELECT SUM(t.amt), s.city, s.state
+FROM trnsact t LEFT JOIN store_msa s
+ON t.store = s.store
+WHERE t.stype = 'P'
+GROUP BY s.store, s.city, s.state
+ORDER BY SUM(t.amt) DESC;
+
+SELECT state, COUNT(DISTINCT store)
+FROM strinfo
+GROUP BY state
+HAVING COUNT(store) > 10;
+
+SELECT AVG(t.sprice), d.deptdesc, s.brand, s.color
+FROM skuinfo s LEFT JOIN trnsact t
+ON t.sku = s.sku
+LEFT JOIN deptinfo d
+ON s.dept = d.dept
+WHERE t.stype = 'P' 
+GROUP BY d.deptdesc, s.brand, s.color
+HAVING d.deptdesc = 'reebok' and s.brand = 'skechers' and color = 'wht/saphire'; 
